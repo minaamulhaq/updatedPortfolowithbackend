@@ -40,3 +40,4 @@ jobs:
             cd /var/www/myapp
             git pull
             docker compose up -d --build
+          timeout: 2800
