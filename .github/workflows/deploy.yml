@@ -19,6 +19,8 @@ jobs:
           echo "CLOUDINARY_CLOUD_NAME=${{ secrets.BACKEND_CLOUDINARY_NAME }}" >> backend/.env
           echo "CLOUDINARY_API_KEY=${{ secrets.BACKEND_CLOUDINARY_KEY }}" >> backend/.env
           echo "CLOUDINARY_API_SECRET=${{ secrets.BACKEND_CLOUDINARY_SECRET }}" >> backend/.env
+          echo "JWT_SECRET=${{ secrets.BACKEND_JWT_SECRET }}" >> backend/.env
+
           echo "CLIENT_URL=${{ secrets.BACKEND_CLIENT_URL }}" >> backend/.env
           echo "PORT=${{ secrets.BACKEND_PORT }}" >> backend/.env
 
