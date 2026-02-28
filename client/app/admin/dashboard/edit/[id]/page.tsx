@@ -81,7 +81,8 @@ export default function EditProjectPage() {
 
             const res = await axios.put(
                 `${process.env.NEXT_PUBLIC_API_URL}/project/update/${id}`,
-                payload
+                payload,
+                { withCredentials: true }
             );
             if (res.data.success) {
                 toast("Project updated successfully!");
@@ -95,6 +96,7 @@ export default function EditProjectPage() {
             setLoading(false);
         }
     };
+
 
     if (fetching) {
         return (

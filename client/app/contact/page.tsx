@@ -119,16 +119,33 @@ export default function ContactPage() {
 
                             <div className="mt-16 relative z-10">
                                 <div className="flex gap-4">
-                                    {[Github, Linkedin, Twitter].map((Icon, idx) => (
-                                        <motion.a
-                                            key={idx}
-                                            href="#"
-                                            whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
-                                            className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all shadow-lg"
-                                        >
-                                            <Icon size={20} />
-                                        </motion.a>
-                                    ))}
+
+                                    <motion.a
+
+                                        href="https://github.com/minaamulhaq"
+                                        whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
+                                        className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all shadow-lg"
+                                    >
+                                        <Github size={20} />
+                                    </motion.a>
+                                    <motion.a
+
+                                        href="https://github.com/minaamulhaq"
+                                        whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
+                                        className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all shadow-lg"
+                                    >
+                                        <Linkedin size={20} />
+                                    </motion.a>
+                                    <motion.a
+
+                                        href="https://github.com/minaamulhaq"
+                                        whileHover={{ y: -4, backgroundColor: "rgba(255,255,255,0.08)" }}
+                                        className="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-400 hover:text-white transition-all shadow-lg"
+                                    >
+                                        <Twitter size={20} />
+                                    </motion.a>
+
+
                                 </div>
                             </div>
                         </div>

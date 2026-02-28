@@ -45,7 +45,9 @@ export default function ProjectDashboard() {
 
     const handleDeleteProject = async (id: string) => {
         try {
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/project/delete/${id}`);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/project/delete/${id}`,
+                { withCredentials: true }
+            );
             setProjects((prev) => prev.filter((p) => p._id !== id));
             toast("Project deleted successfully!");
         } catch (err) {

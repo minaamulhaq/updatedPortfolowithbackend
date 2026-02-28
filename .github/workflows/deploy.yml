@@ -1,0 +1,40 @@
+name: Deploy Backend + Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Setup backend .env
+      - name: Setup backend .env
+        run: |
+          echo "MONGO_URI=${{ secrets.BACKEND_MONGO_URI }}" >> backend/.env
+          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.BACKEND_CLOUDINARY_NAME }}" >> backend/.env
+          echo "CLOUDINARY_API_KEY=${{ secrets.BACKEND_CLOUDINARY_KEY }}" >> backend/.env
+          echo "CLOUDINARY_API_SECRET=${{ secrets.BACKEND_CLOUDINARY_SECRET }}" >> backend/.env
+          echo "CLIENT_URL=${{ secrets.BACKEND_CLIENT_URL }}" >> backend/.env
+          echo "PORT=${{ secrets.BACKEND_PORT }}" >> backend/.env
+
+      # Setup frontend .env
+      - name: Setup frontend .env
+        run: |
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.FRONTEND_API_URL }}" >> frontend/.env
+
+      # SSH to VPS & deploy
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /var/www/myapp
+            git pull
+            docker compose up -d --build

@@ -73,7 +73,13 @@ export default function Header() {
                             <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-purple-500 group-hover:w-full transition-all duration-300" />
                         </Link>
                     ))}
-                    <button className="px-6 py-2.5 bg-white text-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 hover:text-white transition-all">
+                    <button
+                        onClick={
+                            () => {
+                                window.open("https://www.linkedin.com/in/m-inaam-ul-haq/", "_blank");
+                            }
+                        }
+                        className="cursor-pointer px-6 py-2.5 bg-white text-black rounded-full text-xs font-bold uppercase tracking-widest hover:bg-purple-600 hover:text-white transition-all">
                         Hire Me
                     </button>
                 </div>

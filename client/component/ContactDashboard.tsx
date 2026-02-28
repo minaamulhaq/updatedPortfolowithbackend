@@ -22,7 +22,8 @@ export default function ContactDashboard() {
         const fetchContacts = async () => {
             try {
                 const res = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/contact/all`
+                    `${process.env.NEXT_PUBLIC_API_URL}/contact/all`,
+                    { withCredentials: true }
                 );
                 setContacts(res.data);
 

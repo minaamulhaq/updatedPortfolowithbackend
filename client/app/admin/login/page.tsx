@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import axios from "axios";
+import { toast } from "sonner";
 
 export default function Login() {
     const [password, setPassword] = useState("");
@@ -12,24 +14,53 @@ export default function Login() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!password.trim()) {
+            toast("Password is required");
+            return;
+        }
+
         setLoading(true);
         setError("");
 
         try {
+            const res = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/user/login`,
+                { password },
+                { withCredentials: true }
+            );
 
+            if (res.data?.success) {
+                router.push("/admin/dashboard");
+            } else {
+                toast.error(res.data?.message || "Invalid password");
+            }
 
-            // Login success → redirect
-            router.push("/admin/dashboard");
+        } catch (error: any) {
+            // 🔥 Proper Error Handling
+            if (error.response) {
+                // Server responded with status code (401, 500, etc.)
+                if (error.response.status === 401) {
+                    toast.error("Incorrect password. Please try again.");
+                } else if (error.response.status === 500) {
+                    toast.error("Server error. Please try later.");
+                } else {
+                    toast.error(error.response.data?.message || "Login failed.");
+                }
+            } else if (error.request) {
+                // Request was made but no response received
+                toast.error("Unable to connect to server.");
+            } else {
+                // Something else happened
+                toast.error("Unexpected error occurred.");
+            }
 
-        } catch (err) {
-            console.error(err);
-            setError("Something went wrong!");
+            console.error("Login error:", error);
         } finally {
             setLoading(false);
             setPassword("");
         }
     };
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-[#0f0f14] text-white px-4">
             <motion.div

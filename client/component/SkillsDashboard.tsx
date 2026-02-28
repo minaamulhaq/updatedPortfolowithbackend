@@ -75,7 +75,7 @@ export default function SkillsDashboard() {
                 category: currentCat.category,
                 items: currentCat.items,
             };
-            const update = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/skill/update/${currentCat._id}`, payload);
+            const update = await axios.put(`${process.env.NEXT_PUBLIC_API_URL}/skill/update/${currentCat._id}`, payload, { withCredentials: true });
 
             if (update.data.success) {
                 toast("Skills updated successfully!");

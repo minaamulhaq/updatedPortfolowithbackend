@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { ArrowLeft } from "lucide-react";
@@ -49,7 +49,8 @@ export default function AddProjectPage() {
 
             const res = await axios.post(
                 `${process.env.NEXT_PUBLIC_API_URL}/project/add`,
-                payload
+                payload,
+                { withCredentials: true }
             );
             if (res.data.success) {
                 console.log("Project created:", res.data);
@@ -63,6 +64,33 @@ export default function AddProjectPage() {
             setLoading(false);
         }
     };
+
+    const [loadin, setLoadin] = useState(true);
+    useEffect(() => {
+        setLoadin(true);
+        axios
+            .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`, {
+                withCredentials: true,
+            })
+            .catch(() => {
+                router.push("/admin/login");
+            })
+            .finally(() => {
+                setLoadin(false);
+            });
+    }, []);
+
+    if (loadin) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#0f0f14] text-white">
+                <div className="animate-pulse text-xl">Loading dashboard...</div>
+            </div>
+        );
+    }
+
+
+
+
 
     return (
         <div className="min-h-screen bg-[#0f0f14] text-gray-100 pt-24 px-4">
