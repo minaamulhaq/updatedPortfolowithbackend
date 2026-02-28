@@ -27,7 +27,7 @@ jobs:
       # Setup frontend .env
       - name: Setup frontend .env
         run: |
-          echo "NEXT_PUBLIC_API_URL=${{ secrets.FRONTEND_API_URL }}" >> frontend/.env
+          echo "NEXT_PUBLIC_API_URL=${{ secrets.FRONTEND_API_URL }}" >> client/.env
 
       # SSH to VPS & deploy
       - name: Deploy to VPS
