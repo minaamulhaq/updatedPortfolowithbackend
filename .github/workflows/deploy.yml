@@ -1,43 +1,37 @@
-name: Deploy Backend + Frontend
+name: Deploy to VPS
 
 on:
   push:
     branches:
-      - main
+      - main  # ya jo branch deploy karna ho
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Setup backend .env
-      - name: Setup backend .env
-        run: |
-          echo "MONGO_URI=${{ secrets.BACKEND_MONGO_URI }}" >> backend/.env
-          echo "CLOUDINARY_CLOUD_NAME=${{ secrets.BACKEND_CLOUDINARY_NAME }}" >> backend/.env
-          echo "CLOUDINARY_API_KEY=${{ secrets.BACKEND_CLOUDINARY_KEY }}" >> backend/.env
-          echo "CLOUDINARY_API_SECRET=${{ secrets.BACKEND_CLOUDINARY_SECRET }}" >> backend/.env
-          echo "JWT_SECRET=${{ secrets.BACKEND_JWT_SECRET }}" >> backend/.env
-
-          echo "CLIENT_URL=${{ secrets.BACKEND_CLIENT_URL }}" >> backend/.env
-          echo "PORT=${{ secrets.BACKEND_PORT }}" >> backend/.env
-
-      # Setup frontend .env
-      - name: Setup frontend .env
-        run: |
-          echo "NEXT_PUBLIC_API_URL=${{ secrets.FRONTEND_API_URL }}" >> client/.env
-
-      # SSH to VPS & deploy
-      - name: Deploy to VPS
+      - name: SSH and deploy
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_KEY }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+
+          # SSH action ke liye command
           script: |
             cd /var/www/myapp
+            git reset --hard
             git pull
+            docker compose down
             docker compose up -d --build
-          timeout: 46m40s
+
+          # Proper timeout format
+          timeout: 30m       # 30 minutes max for SSH connection
+          command_timeout: 10m  # max 10 minutes per command
+          sync: false
+          use_insecure_cipher: false
+          script_stop: true  # agar koi command fail ho to stop
+          debug: true        # debug info for logs
