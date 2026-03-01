@@ -15,4 +15,4 @@ WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package*.json ./
 EXPOSE 3000
-CMD ["npx", "next", "start", "-p", "3000"]
+CMD ["npm", "run", "start"]
