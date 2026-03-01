@@ -29,8 +29,8 @@ jobs:
             docker compose up -d --build
 
           # Proper timeout format
-          timeout: 30m       # 30 minutes max for SSH connection
-          command_timeout: 10m  # max 10 minutes per command
+          timeout: 60m           # total timeout for SSH
+          command_timeout: 45m   # timeout for each command
           sync: false
           use_insecure_cipher: false
           script_stop: true  # agar koi command fail ho to stop
