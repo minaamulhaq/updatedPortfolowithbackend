@@ -21,6 +21,8 @@ jobs:
     # Build frontend on GitHub runner
     - name: Build Frontend
       working-directory: ./client
+      env:
+        NEXT_PUBLIC_API_URL: /api
       run: |
         npm install
         npm run build
