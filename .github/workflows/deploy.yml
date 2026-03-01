@@ -16,18 +16,20 @@ jobs:
     - name: Setup Node
       uses: actions/setup-node@v3
       with:
-        node-version: '20'
+        node-version: '25'
 
-    # Build frontend locally on GitHub runner
+    # Build frontend on GitHub runner
     - name: Build Frontend
       working-directory: ./client
       run: |
         npm install
         npm run build
 
-    # Optional: Build Docker image locally for frontend
+    # Build Docker images (backend + prebuilt frontend)
     - name: Build Docker Images
       run: |
+        # Copy prebuilt frontend into Docker folder
+        cp -r ./client/.next ./client/.next
         docker build -t myapp-frontend ./client
         docker build -t myapp-backend ./backend
 
@@ -42,4 +44,4 @@ jobs:
         script: |
           cd /var/www/myapp
           docker compose down
-          docker compose up -d --build
+          docker compose up -d
