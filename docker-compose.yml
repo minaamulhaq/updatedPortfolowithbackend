@@ -1,25 +1,17 @@
+version: "3.8"
 services:
-
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: node_backend
-    restart: always
-    env_file:
-      - ./backend/.env
+    build: ./backend
     ports:
       - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongo
 
   frontend:
-    build:
-      context: ./client
-      dockerfile: Dockerfile
-    container_name: nextjs_frontend
-    restart: always
-    depends_on:
-      - backend
-    env_file:
-      - ./client/.env
+    build: ./client
     ports:
       - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "https://minaamulhaq.me/api"
