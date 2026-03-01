@@ -137,7 +137,7 @@ export default function Portfolio() {
     console.log("CVs:", cvs);
     // Directly open the API endpoint in a new tab/window
     // The backend's res.redirect + "attachment" flag will trigger the download automatically
-    window.open(`${process.env.NEXT_PUBLIC_API_URL}/cv/download/${cvs._id}`, "_blank");
+    window.open(`${process.env.NEXT_PUBLIC_API_URL}api/cv/download/${cvs._id}`, "_blank");
   };
 
   return (
