@@ -149,11 +149,18 @@ export default function Header() {
 
                             <div className="p-6 border-t border-white/5 bg-[#0d0d12] space-y-6">
                                 <div className="flex justify-center gap-8 text-gray-500">
-                                    <a href="#" className="hover:text-white transition-colors"><Linkedin size={22} /></a>
-                                    <a href="#" className="hover:text-white transition-colors"><Github size={22} /></a>
-                                    <a href="#" className="hover:text-white transition-colors"><Mail size={22} /></a>
+                                    <a href="https://www.linkedin.com/in/m-inaam-ul-haq/" className="hover:text-white transition-colors"><Linkedin size={22} /></a>
+                                    <a href="https://github.com/minaamulhaq" className="hover:text-white transition-colors"><Github size={22} /></a>
+                                    <a href="mailto:minaamulhaq00@gmail.com" className="hover:text-white transition-colors"><Mail size={22} /></a>
                                 </div>
-                                <button className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
+
+                                <button
+                                    onClick={
+                                        () => {
+                                            window.open("https://www.linkedin.com/in/m-inaam-ul-haq/", "_blank");
+                                        }
+                                    }
+                                    className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl font-bold text-white flex items-center justify-center gap-2 shadow-lg active:scale-[0.98] transition-all">
                                     <Send size={18} />
                                     Hire Me
                                 </button>
