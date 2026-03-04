@@ -14,9 +14,13 @@ import {
   Globe,
   ChevronRight,
   FileDown,
+  Bot,
+  Wrench,
+  TerminalSquare,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
+import AboutMe from "@/component/AboutMe";
 
 /* -------------------- Types -------------------- */
 
@@ -41,6 +45,10 @@ const iconMap: Record<string, React.ReactNode> = {
   Frontend: <Globe className="w-5 h-5" />,
   Backend: <Code2 className="w-5 h-5" />,
   "AI & Advanced": <Cpu className="w-5 h-5" />,
+
+  "AI Tools & Automation": <Bot className="w-5 h-5" />,
+  "DevOps & Tools": <Wrench className="w-5 h-5" />,
+  Languages: <TerminalSquare className="w-5 h-5" />,
 };
 
 /* -------------------- Reusable Components -------------------- */
@@ -164,7 +172,7 @@ export default function Portfolio() {
             </h1>
 
             <p className="text-lg md:text-2xl text-gray-300 mt-6 font-medium">
-              Full-Stack Developer | AI Enthusiast
+              Software Engineer | AI/ML Enthusiast
             </p>
             <p className="text-gray-500 max-w-lg mt-4 leading-relaxed mx-auto md:mx-0 text-sm md:text-base">
               Crafting intelligent, high-performance web applications with a focus on AI integration and scalable architecture.
@@ -258,7 +266,7 @@ export default function Portfolio() {
         </SectionWrapper>
       </div>
 
-
+      <AboutMe />
 
       {/* SKILLS */}
       <SectionWrapper id="skills">
