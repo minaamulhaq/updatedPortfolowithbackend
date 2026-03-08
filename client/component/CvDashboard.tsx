@@ -72,6 +72,7 @@ export default function CvDashboard() {
                     const percent = Math.round((progressEvent.loaded * 100) / (progressEvent.total || 1));
                     setProgress(percent);
                 },
+                withCredentials: true,
             });
 
             setCvs((prev) => [res.data, ...prev]);
@@ -87,7 +88,9 @@ export default function CvDashboard() {
     // Delete CV
     const handleDelete = async (id: string) => {
         try {
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/cv/delete/${id}`);
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/cv/delete/${id}`, {
+                withCredentials: true,
+            });
             setCvs((prev) => prev.filter((cv) => cv._id !== id));
         } catch (error) {
             console.error("Error deleting CV:", error);

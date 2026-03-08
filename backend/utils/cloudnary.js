@@ -18,7 +18,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 
         // Upload file
         const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "raw",
+            resource_type: "auto",
             folder: "portfolio", // optional but recommended
         });
 
@@ -57,7 +57,7 @@ const generateDownloadUrl = (publicId) => {
     try {
         return cloudinary.url(publicId, {
             flags: "attachment",
-            resource_type: "raw", // Must match the upload type
+            resource_type: "auto", // Must match the upload type
         });
     } catch (error) {
         console.error("Error generating download URL:", error);

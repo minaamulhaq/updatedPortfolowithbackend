@@ -17,20 +17,31 @@ import {
   Bot,
   Wrench,
   TerminalSquare,
+  Send,
 } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
 import AboutMe from "@/component/AboutMe";
+import Workflow from "@/component/Workflow";
+import Project from "@/component/Project";
+import { SectionWrapper } from "@/component/SectionWrapper";
 
 /* -------------------- Types -------------------- */
+interface Images {
+  url: string;
+  public_id: string;
+  assetid: string;
+}
 
 interface Project {
   _id: string;
   title: string;
   description: string;
   tech: string[];
-  github?: string;
+  github: string;
   link?: string;
+  category: string;
+  images: Images[];
 }
 
 interface SkillCategory {
@@ -51,50 +62,16 @@ const iconMap: Record<string, React.ReactNode> = {
   Languages: <TerminalSquare className="w-5 h-5" />,
 };
 
-/* -------------------- Reusable Components -------------------- */
 
-const SectionWrapper = ({
-  children,
-  id,
-  className = "",
-}: {
-  children: React.ReactNode;
-  id?: string;
-  className?: string;
-}) => (
-  <motion.section
-    id={id}
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ duration: 0.6 }}
-    className={`py-16 md:py-28 px-5 md:px-12 max-w-7xl mx-auto ${className}`}
-  >
-    {children}
-  </motion.section>
-);
 
-const GlassCard = ({
-  children,
-  className = "",
-}: {
-  children: React.ReactNode;
-  className?: string;
-}) => (
-  <div
-    className={`bg-[#16161d] border border-white/10 backdrop-blur-md rounded-2xl p-6 hover:border-purple-500/50 transition-all duration-300 ${className}`}
-  >
-    {children}
-  </div>
-);
 
 /* -------------------- Main Component -------------------- */
 
 export default function Portfolio() {
   const [skills, setSkills] = useState<SkillCategory[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+
   const [loadingSkills, setLoadingSkills] = useState(true);
-  const [loadingProjects, setLoadingProjects] = useState(true);
+
   const [cvs, setCvs] = useState<any>(null);
   /* -------------------- Fetch Skills -------------------- */
 
@@ -118,41 +95,19 @@ export default function Portfolio() {
 
   /* -------------------- Fetch Projects -------------------- */
 
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/project/all`
-        );
-        const file = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/cv/download`);
-        setCvs(file.data.cv);
-        const data: Project[] = await res.json();
-        setProjects(data || []);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoadingProjects(false);
-      }
-    };
 
-    fetchProjects();
-  }, []);
 
   /* -------------------- CV Download -------------------- */
 
   const handleDownload = () => {
-    if (!cvs || cvs.length === 0) return toast("No CV available");
-    console.log("CVs:", cvs);
-    // Directly open the API endpoint in a new tab/window
-    // The backend's res.redirect + "attachment" flag will trigger the download automatically
-    window.open(`${process.env.NEXT_PUBLIC_API_URL}api/cv/download/${cvs._id}`, "_blank");
+    window.open("https://www.upwork.com/freelancers/~01d744b66a1d72a810?mp_source=share", "_blank");
   };
 
   return (
     <div className="min-h-screen bg-[#0f0f14] text-gray-100 selection:bg-purple-500/30 overflow-x-hidden">
 
       {/* HERO */}
-      <SectionWrapper id="hero" className="flex flex-col-reverse md:grid md:grid-cols-2 gap-12 items-center min-h-[90vh] md:min-h-[80vh]">
+      <SectionWrapper id="hero" className="flex md:py-28 flex-col-reverse md:grid md:grid-cols-2 gap-12 items-center min-h-[90vh] md:min-h-[80vh]">
         <div className="space-y-8 text-center md:text-left">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -218,8 +173,8 @@ export default function Portfolio() {
               <div className="h-8 w-1px bg-white/10 mx-2 hidden sm:block"></div>
 
               <button onClick={handleDownload} className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500 hover:text-white transition-all text-purple-400 text-sm font-bold">
-                <FileDown size={18} />
-                Download CV
+                <Send size={18} />
+                Hire Upwork
               </button>
             </div>
           </div>
@@ -250,127 +205,189 @@ export default function Portfolio() {
       </SectionWrapper>
 
 
+
       {/* 🧑‍💼 ABOUT SECTION */}
-      <div className="bg-[#121218]/50 border-y border-white/5">
-        <SectionWrapper id="about">
-          <div className="max-w-3xl">
-            <h3 className="text-blue-400 font-mono text-sm mb-4 uppercase tracking-widest">// background_info</h3>
-            <h2 className="text-3xl md:text-4xl font-bold mb-8">Building the future with code and AI.</h2>
-            <p className="text-base md:text-lg text-gray-400 leading-relaxed mb-6">
-              I am a results-driven developer specializing in modern web architecture. My expertise lies in bridging the gap between robust <strong>Full-Stack engineering</strong> and <strong>Artificial Intelligence</strong>.
-            </p>
-            <p className="text-base md:text-lg text-gray-400 leading-relaxed">
-              Whether it's building RAG pipelines with LangChain or designing fluid user interfaces with Next.js, I focus on creating digital solutions that are as intelligent as they are functional.
-            </p>
+      <div className="relative bg-[#050505] border-y border-white/5 overflow-hidden">
+
+        {/* Ambient Glow behind the text - Matching your Workflow style */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-125 bg-purple-600/5 blur-[120px] rounded-full pointer-events-none" />
+
+        <SectionWrapper id="about" className="py-24 relative z-10">
+          <div className="max-w-350 mx-auto px-6">
+
+            {/* Header - Aligned with Engineering Flow Header */}
+            <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div>
+                <h3 className="text-purple-500 font-mono text-[10px] mb-2 uppercase tracking-[0.4em]">
+            // background_info
+                </h3>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight uppercase leading-none">
+                  Building the <span className="text-white">Future</span> <br className="hidden md:block" />
+                  with <span className="text-purple-500">Code & AI.</span>
+                </h2>
+              </div>
+              <div className="h-1px flex-1 bg-white/5 mx-8 hidden md:block mb-4" />
+              <div className="text-white/20 text-[10px] font-mono hidden md:block mb-4 uppercase tracking-[0.2em]">
+                Inaam @ Dev_System
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="max-w-4xl">
+              <div className="grid md:grid-cols-[1fr_auto_1fr] items-start gap-8 md:gap-12">
+
+                <p className="text-base md:text-lg text-gray-400 leading-relaxed font-medium">
+                  I am a results-driven developer specializing in modern web architecture. My expertise lies in bridging the gap between robust
+                  <span className="text-white font-bold px-1 border-b border-purple-500/30">Full-Stack engineering</span>
+                  and <span className="text-white font-bold px-1 border-b border-blue-500/30">Artificial Intelligence</span>.
+                </p>
+
+                {/* Vertical Divider (Desktop Only) */}
+                <div className="hidden md:block w-1px h-32 bg-linear-to-b from-purple-500/50 to-transparent self-center" />
+
+                <p className="text-base md:text-lg text-gray-400 leading-relaxed">
+                  Whether it's building RAG pipelines with LangChain or designing fluid user interfaces with Next.js, I focus on creating digital solutions that are as
+                  <span className="text-purple-400 font-mono italic"> intelligent </span>
+                  as they are
+                  <span className="text-blue-400 font-mono italic"> functional</span>.
+                </p>
+
+              </div>
+
+              {/* System Status Line - Matching your Footer Progress Lines */}
+              <div className="mt-16 h-1px w-full bg-white/5 relative">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "30%" }}
+                  transition={{ duration: 1.5, ease: "easeOut" }}
+                  className="absolute top-0 left-0 h-full bg-linear-to-r from-purple-500 to-blue-500"
+                />
+                <div className="absolute -top-6 left-0 text-[8px] font-mono text-white/20 uppercase tracking-[0.3em]">
+                  Status: System_Active // 2026
+                </div>
+              </div>
+            </div>
           </div>
         </SectionWrapper>
       </div>
 
+
+
+
+
       <AboutMe />
+      <Workflow />
 
-      {/* SKILLS */}
-      <SectionWrapper id="skills">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-          Technical Arsenal
-        </h2>
+      {/* Skill */}
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {loadingSkills ? (
-            <p className="col-span-full text-center text-gray-500">
-              Loading skills...
-            </p>
-          ) : skills.length === 0 ? (
-            <p className="col-span-full text-center text-gray-500">
-              No skills found.
-            </p>
-          ) : (
+      <SectionWrapper id="skills" className="relative py-24 bg-[#050505] text-white overflow-hidden">
 
-            skills.map((skill) => (
-              <GlassCard key={skill._id}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="p-3 bg-purple-600/10 rounded-xl text-purple-500">
-                    {iconMap[skill.category] || (
-                      <Globe className="w-5 h-5" />
-                    )}
+        {/* Ambient Background Elements - EXACT match to Workflow */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full pointer-events-none" />
+
+        <div className="max-w-350 mx-auto px-6 relative z-10">
+
+          {/* Header - Aligned with Engineering Flow Header */}
+          <div className="mb-16 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-2 uppercase">
+                TECHNICAL <span className="text-purple-500">ARSENAL.</span>
+              </h2>
+              <p className="text-gray-500 font-mono text-[10px] uppercase tracking-[0.4em]">
+                Tools & Technologies I Master
+              </p>
+            </div>
+            <div className="h-1px flex-1 bg-white/5 mx-8 hidden md:block mb-4" />
+            <div className="text-white/40 text-[10px] font-mono hidden md:block mb-4 uppercase tracking-widest">
+              Inaam @ Portfolio 2026
+            </div>
+          </div>
+
+          {/* Skills Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {loadingSkills ? (
+              <div className="col-span-full py-20 flex flex-col items-center justify-center">
+                <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-gray-500 font-mono text-[10px] tracking-widest uppercase text-center">INITIALIZING SYSTEM...</p>
+              </div>
+            ) : skills.length === 0 ? (
+              <p className="col-span-full text-center text-gray-500 font-mono text-xs uppercase tracking-widest italic">No data in database.</p>
+            ) : (
+              skills.map((skill, index) => (
+                <motion.div
+                  key={skill._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1, duration: 0.5 }}
+                  viewport={{ once: true }}
+                  className="group relative"
+                >
+                  {/* INNER CARD: Exact same style as Workflow Card */}
+                  <div className="h-full bg-[#0a0a0a] border border-white/5 p-8 rounded-2xl group-hover:border-purple-500/40 transition-all duration-500 flex flex-col justify-between relative overflow-hidden backdrop-blur-sm">
+
+                    {/* Hover Radial Glow - Same as Workflow */}
+                    <div className="absolute -top-10 -left-10 w-32 h-32 bg-purple-600/10 blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+
+                    <div>
+                      {/* ICON & CATEGORY: Flex-row on mobile, Desktop stays Row for alignment */}
+                      <div className="flex items-center gap-4 mb-8 relative z-10">
+
+                        {/* Icon Design - Matching Workflow */}
+                        <div className="relative shrink-0">
+                          <div className="flex items-center justify-center w-12 h-12 rounded-lg bg-linear-to-br from-white/10 to-transparent border border-white/10 text-purple-400 group-hover:scale-110 group-hover:text-white group-hover:border-purple-500/50 transition-all duration-500 shadow-xl">
+                            {iconMap[skill.category] || <Globe size={20} />}
+                          </div>
+                          {/* Active Decorative Dot */}
+                          <div className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full bg-purple-500 scale-0 group-hover:scale-100 transition-transform duration-500 delay-100 shadow-[0_0_8px_rgba(168,85,247,0.8)]" />
+                        </div>
+
+                        <h3 className="text-xl font-bold tracking-tight text-gray-200 group-hover:text-white group-hover:tracking-wide transition-all duration-300">
+                          {skill.category}
+                        </h3>
+                      </div>
+
+                      {/* SKILL ITEMS - Badges with System Aesthetic */}
+                      <div className="flex flex-wrap gap-2 relative z-10">
+                        {skill.items.map((item, i) => (
+                          <span
+                            key={i}
+                            className="px-3 py-1.5 text-[9px] font-mono font-medium bg-white/3 border border-white/5 rounded-lg text-gray-500 group-hover:text-purple-300 group-hover:border-purple-500/20 group-hover:bg-purple-500/5 transition-all duration-300 uppercase tracking-widest"
+                          >
+                            {item}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* FOOTER PROGRESS LINE: Identical to Workflow footer */}
+                    <div className="mt-8 relative z-10">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[8px] font-mono uppercase tracking-[0.2em] text-white/20 group-hover:text-purple-500/50 transition-colors">
+                          System Verified
+                        </span>
+                      </div>
+                      <div className="h-1px w-full bg-white/5 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: "100%" }}
+                          transition={{ duration: 1.5, delay: index * 0.2 }}
+                          className="h-full bg-linear-to-r from-purple-600 via-blue-500 to-purple-600"
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <h4 className="text-xl font-bold">
-                    {skill.category}
-                  </h4>
-                </div>
-
-                <div className="flex flex-wrap gap-2">
-                  {skill.items.map((item, i) => (
-                    <span
-                      key={i}
-                      className="px-3 py-1 text-xs bg-white/5 border border-white/10 rounded-lg text-gray-400"
-                    >
-                      {item}
-                    </span>
-                  ))}
-                </div>
-              </GlassCard>
-            ))
-          )}
+                </motion.div>
+              ))
+            )}
+          </div>
         </div>
       </SectionWrapper>
-
       {/* PROJECTS */}
-      <SectionWrapper id="projects" className="bg-[#0c0c11]/50 rounded-[3rem]">
-        <h2 className="text-3xl md:text-4xl font-bold mb-12 text-center">
-          Selected Work
-        </h2>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {loadingProjects ? (
-            <p className="col-span-full text-center text-gray-500">
-              Loading projects...
-            </p>
-          ) : projects.length === 0 ? (
-            <p className="col-span-full text-center text-gray-500">
-              No projects found.
-            </p>
-          ) : (
-            projects.map((proj) => (
-              <GlassCard key={proj._id} className="flex flex-col h-full">
-                <div className="flex justify-between mb-4">
-                  <h4 className="text-xl font-bold">
-                    {proj.title}
-                  </h4>
 
-                  <div className="flex gap-3 text-gray-500">
-                    {proj.github && (
-                      <a href={proj.github}>
-                        <Github size={18} />
-                      </a>
-                    )}
-                    {proj.link && (
-                      <a href={proj.link}>
-                        <ExternalLink size={18} />
-                      </a>
-                    )}
-                  </div>
-                </div>
+      <Project />
 
-                <p className="text-gray-500 text-sm grow mb-6">
-                  {proj.description}
-                </p>
-
-                <div className="flex flex-wrap gap-2">
-                  {proj.tech?.map((t, i) => (
-                    <span
-                      key={i}
-                      className="text-[10px] uppercase font-bold text-blue-400/80"
-                    >
-                      {t}
-                      {i !== proj.tech.length - 1 && " •"}
-                    </span>
-                  ))}
-                </div>
-              </GlassCard>
-            ))
-          )}
-        </div>
-      </SectionWrapper>
 
     </div>
   );

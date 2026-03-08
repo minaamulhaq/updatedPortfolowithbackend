@@ -96,22 +96,11 @@ export default function ProjectDashboard() {
                         >
                             <div className="flex flex-col md:flex-row md:items-center gap-4">
                                 {/* Project Images */}
-                                {proj.images.length > 0 && (
-                                    <div className="flex gap-2 overflow-x-auto max-w-37.5">
-                                        {proj.images.map((img) => (
-                                            <img
-                                                key={img.assetid}
-                                                src={img.url}
-                                                alt={proj.title}
-                                                className="w-24 h-24 object-cover rounded-lg border border-white/10"
-                                            />
-                                        ))}
-                                    </div>
-                                )}
+
 
                                 <div className="flex flex-col">
                                     <h3 className="text-lg font-semibold">{proj.title}</h3>
-                                    <p className="text-gray-400 text-sm">{proj.description}</p>
+                                    <p className="text-gray-400 line-clamp-4 text-sm">{proj.description}</p>
                                     <div className="flex flex-wrap gap-2 mt-1">
                                         {proj.tech.map((t, i) => (
                                             <span

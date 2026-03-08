@@ -2,195 +2,179 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Github, ExternalLink, Sparkles } from "lucide-react";
+import { Github, ExternalLink, Sparkles, MoveRight, ChevronLeft, ChevronRight } from "lucide-react";
 import axios from "axios";
+import Link from "next/link";
+import { GlassCard } from "@/component/GlassCard";
 
-/* -------------------- Types -------------------- */
+/* -------------------- Project Image Slider -------------------- */
+const ProjectImageSlider = ({ images }: { images: any[] }) => {
+  const [index, setIndex] = useState(0);
 
-interface Project {
-  _id: string;
-  title: string;
-  description: string;
-  category: string;
-  tech?: string[];
-  github?: string;
-  live?: string;
-}
+  if (!images?.length) return <div className="w-full h-full bg-[#0c0c11] animate-pulse rounded-t-[2.5rem]" />;
 
-/* -------------------- Component -------------------- */
+  return (
+    <div className="relative w-full h-full group/slider overflow-hidden rounded-t-[2.5rem]">
+      <div
+        className="flex h-full transition-transform duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]"
+        style={{ transform: `translateX(-${index * 100}%)` }}
+      >
+        {images.map((img, i) => (
+          <img key={i} src={img.url} alt="project" className="min-w-full h-full object-cover flex-shrink-0" />
+        ))}
+      </div>
 
-const ProjectsPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<string>("All");
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+      {images.length > 1 && (
+        <div className="absolute inset-x-3 top-1/2 -translate-y-1/2 flex justify-between opacity-0 group-hover/slider:opacity-100 transition-all duration-300">
+          <button
+            onClick={(e) => { e.preventDefault(); setIndex(i => (i === 0 ? images.length - 1 : i - 1)); }}
+            className="p-1.5 rounded-full bg-black/60 backdrop-blur-lg border border-white/10 text-white hover:bg-purple-600 transition-all"
+          >
+            <ChevronLeft size={14} />
+          </button>
+          <button
+            onClick={(e) => { e.preventDefault(); setIndex(i => (i === images.length - 1 ? 0 : i + 1)); }}
+            className="p-1.5 rounded-full bg-black/60 backdrop-blur-lg border border-white/10 text-white hover:bg-purple-600 transition-all"
+          >
+            <ChevronRight size={14} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
 
-  /* -------------------- Fetch Projects -------------------- */
+/* -------------------- Full Projects Page -------------------- */
+const ProjectsPage = () => {
+  const [activeTab, setActiveTab] = useState("All");
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axios.get<Project[]>(
-          `${process.env.NEXT_PUBLIC_API_URL}/project/all?limit=100`
-        );
-
-        setProjects(res.data || []);
+        const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/project/all`);
+        const data = res.data.data || res.data;
+        setProjects(Array.isArray(data) ? data : []);
       } catch (error) {
-        console.error("Error fetching projects:", error);
+        console.error(error);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
     };
-
     fetchProjects();
   }, []);
 
-  /* -------------------- Dynamic Categories -------------------- */
-
-  const categories = useMemo<string[]>(() => {
-    const unique = new Set(projects.map((p) => p.category));
-    return ["All", ...Array.from(unique)];
-  }, [projects]);
-
-  /* -------------------- Filter Logic -------------------- */
-
-  const filteredProjects = useMemo<Project[]>(() => {
-    if (activeTab === "All") return projects;
-    return projects.filter((p) => p.category === activeTab);
-  }, [activeTab, projects]);
+  const categories = useMemo(() => ["All", ...Array.from(new Set(projects.map(p => p.category).filter(Boolean)))], [projects]);
+  const filtered = useMemo(() => activeTab === "All" ? projects : projects.filter(p => p.category === activeTab), [activeTab, projects]);
 
   return (
-    <main className="min-h-screen bg-linear-to-b from-[#0f0f14] via-[#0d0d12] to-[#0a0a0f] text-white selection:bg-purple-500/30">
+    <main className="min-h-screen bg-[#09090d] text-white selection:bg-purple-500/30 overflow-x-hidden">
 
-      {/* Background Glow */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-600/10 blur-[120px] rounded-full" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-600/10 blur-[120px] rounded-full" />
+      {/* Background Aura */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[45%] h-[45%] bg-purple-900/10 blur-[150px] rounded-full animate-pulse" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[45%] h-[45%] bg-blue-900/5 blur-[150px] rounded-full animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-32 pb-24 lg:px-12">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-24 lg:px-12">
 
-        {/* Hero */}
-        <section className="text-center mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] uppercase tracking-[0.3em] font-bold text-blue-400 mb-6">
-              <Sparkles size={12} /> Portfolio Showcase
-            </span>
-
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight">
-              Selected{" "}
-              <span className="bg-clip-text text-transparent bg-linear-to-r from-blue-400 to-purple-500">
-                Projects
-              </span>
+        {/* Header - Tightened Space */}
+        <header className="text-center mb-12">
+          <motion.div initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 mb-6">
+              <Sparkles size={14} className="text-purple-400" />
+              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-gray-400">Archive</span>
+            </div>
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-white">
+              Selected <span className="text-purple-500">Works</span>
             </h1>
           </motion.div>
-        </section>
+        </header>
 
-        {/* Filter Tabs */}
+        {/* Filter Tabs - Optimized Spacing */}
         <div className="flex flex-wrap justify-center gap-3 mb-16">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveTab(cat)}
-              className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all duration-300 border ${activeTab === cat
-                ? "bg-linear-to-r from-blue-600 to-purple-600 border-transparent shadow-lg shadow-purple-500/20"
-                : "bg-white/5 border-white/10 hover:border-white/20 text-gray-400 hover:text-white backdrop-blur-md"
+              className={`relative cursor-pointer px-8 py-2.5 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-500 border ${activeTab === cat
+                ? "bg-purple-600 border-transparent text-white shadow-[0_0_25px_rgba(168,85,247,0.4)] scale-105"
+                : "bg-white/5 border-white/10 text-gray-500 hover:text-white hover:border-purple-500/30 backdrop-blur-md"
                 }`}
             >
-              {cat}
+              <span className="relative z-10">{cat}</span>
             </button>
           ))}
         </div>
 
-        {/* Loading */}
-        {loading && (
-          <div className="text-center text-gray-400">Loading projects...</div>
-        )}
-
-        {/* Empty State */}
-        {!loading && filteredProjects.length === 0 && (
-          <div className="text-center text-gray-500">
-            No projects found in this category.
-          </div>
-        )}
-
-        {/* Projects Grid */}
-        {!loading && filteredProjects.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Projects Grid - Balanced Gaps */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {loading ? (
+            [1, 2, 3].map(i => <div key={i} className="h-[280px] rounded-[2.5rem] bg-white/5 animate-pulse" />)
+          ) : (
             <AnimatePresence mode="popLayout">
-              {filteredProjects.map((proj, index) => (
+              {filtered.map((proj) => (
                 <motion.div
                   layout
                   key={proj._id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 20 }}
-                  transition={{ duration: 0.4, delay: index * 0.05 }}
-                  className="flex flex-col h-full bg-[#16161d]/50 border border-white/10 rounded-4xl p-8 hover:bg-white/3 hover:border-purple-500/40 hover:shadow-[0_0_40px_rgba(168,85,247,0.15)] transition-all duration-500 group"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.5, ease: [0.23, 1, 0.32, 1] }}
+                  className="group relative"
                 >
-                  {/* Title + Icons */}
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold group-hover:text-purple-400 transition-colors">
-                      {proj.title}
-                    </h3>
+                  {/* Glow Aura */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-700 to-purple-500 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-700 pointer-events-none" />
 
-                    <div className="flex gap-3 text-gray-500">
-                      {proj.github && (
-                        <a
-                          href={proj.github}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-white transition-colors"
-                        >
-                          <Github size={18} />
-                        </a>
-                      )}
+                  <GlassCard className="relative h-[280px] rounded-[2.5rem] overflow-hidden bg-[#0c0c11]/90 p-0 border-white/10 group-hover:border-purple-500/40 group-hover:-translate-y-2 transition-all duration-500 flex flex-col z-10">
 
-                      {proj.live && (
-                        <a
-                          href={proj.live}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-white transition-colors"
-                        >
-                          <ExternalLink size={18} />
-                        </a>
-                      )}
+                    {/* Top Slider (70% Height) */}
+                    <div className="h-[70%] overflow-hidden relative border-b border-white/5">
+                      <ProjectImageSlider images={proj.images} />
+                      <div className="absolute top-4 left-5">
+                        <span className="px-2.5 py-0.5 text-[9px] font-black uppercase tracking-widest bg-purple-600/20 border border-purple-500/30 text-purple-300 rounded-md backdrop-blur-md">
+                          {proj.category}
+                        </span>
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Description */}
-                  <p className="text-gray-400 text-sm md:text-base mb-8 grow leading-relaxed">
-                    {proj.description}
-                  </p>
+                    {/* Bottom Info (30% Height) */}
+                    <div className="flex-1 px-6 flex items-center justify-between gap-4">
+                      <div className="min-w-0">
+                        <h4 className="text-lg font-bold text-white leading-tight group-hover:text-purple-400 transition-colors truncate">
+                          {proj.title}
+                        </h4>
+                        <div className="flex gap-2.5 mt-1">
+                          {proj.tech?.slice(0, 3).map((t: string, i: number) => (
+                            <span key={i} className="text-[10px] text-gray-600 font-medium">
+                              #{t.toLowerCase()}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
 
-                  {/* Tech Stack */}
-                  <div className="flex flex-wrap gap-2">
-                    {proj.tech?.map((tech, i) => (
-                      <span
-                        key={i}
-                        className="text-[10px] uppercase tracking-wider font-bold text-blue-400/80"
-                      >
-                        {tech}
-                        {i !== proj.tech!.length - 1 && " •"}
-                      </span>
-                    ))}
-                  </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex gap-3.5 text-gray-600">
+                          {proj.github && <a href={proj.github} target="_blank" className="hover:text-white transition-all"><Github size={16} /></a>}
+                          {proj.live && <a href={proj.live} target="_blank" className="hover:text-purple-400 transition-all"><ExternalLink size={16} /></a>}
+                        </div>
+                        <Link
+                          href={`/project/${proj._id}`}
+                          className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 group-hover:bg-purple-600 group-hover:text-white transition-all duration-500 shadow-xl"
+                        >
+                          <MoveRight size={16} />
+                        </Link>
+                      </div>
+                    </div>
+                  </GlassCard>
                 </motion.div>
               ))}
             </AnimatePresence>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="mt-24 text-center">
-          <p className="text-gray-500 text-sm italic">
-            More experiments available on my GitHub profile.
-          </p>
+          )}
         </div>
+
 
       </div>
     </main>

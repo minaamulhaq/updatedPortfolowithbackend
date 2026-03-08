@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 export default function AddProjectPage() {
     const router = useRouter();
+    const categories = ["Frontend", "Backend", "AI / Full Stack"];
 
-    const categories = ["Frontend", "Backend", "AI & Advanced"];
-
+    // -------------------- State --------------------
     const [project, setProject] = useState({
         title: "",
         description: "",
@@ -20,43 +20,86 @@ export default function AddProjectPage() {
         link: "",
     });
 
+    const [files, setFiles] = useState<File[]>([]);
+    const [filePreviews, setFilePreviews] = useState<{ file: File; previewUrl: string }[]>([]);
     const [loading, setLoading] = useState(false);
+    const [loadin, setLoadin] = useState(true);
 
+    // -------------------- Auth Check --------------------
+    useEffect(() => {
+        axios
+            .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`, { withCredentials: true })
+            .catch(() => router.push("/admin/login"))
+            .finally(() => setLoadin(false));
+    }, [router]);
+
+    // -------------------- Generate Previews --------------------
+    useEffect(() => {
+        const previews = files.map((file) => ({
+            file,
+            previewUrl: URL.createObjectURL(file),
+        }));
+        setFilePreviews(previews);
+
+        return () => previews.forEach((p) => URL.revokeObjectURL(p.previewUrl));
+    }, [files]);
+
+    // -------------------- Handlers --------------------
     const handleChange = (
-        e: React.ChangeEvent<
-            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-        >
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
     ) => {
         setProject({ ...project, [e.target.name]: e.target.value });
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files) return;
+
+        // Only allow images
+        const images = Array.from(e.target.files).filter(file => file.type.startsWith("image/"));
+        setFiles([...files, ...images]);
+    };
+
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        if (!e.dataTransfer.files) return;
+
+        const images = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith("image/"));
+        setFiles([...files, ...images]);
+    };
+
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => e.preventDefault();
+
     const handleSubmit = async () => {
         if (!project.title || !project.description || !project.category) {
-            return alert("Title, Description and Category are required");
+            return toast("Title, Description, and Category are required!");
         }
+        if (files.length === 0) return toast("Please upload at least one image!");
 
         try {
             setLoading(true);
 
-            const payload = {
-                title: project.title,
-                description: project.description,
-                category: project.category,
-                tech: project.tech.split(",").map((t) => t.trim()),
-                github: project.github,
-                link: project.link,
-            };
 
-            const res = await axios.post(
-                `${process.env.NEXT_PUBLIC_API_URL}/project/add`,
-                payload,
-                { withCredentials: true }
-            );
-            if (res.data.success) {
-                console.log("Project created:", res.data);
-                toast("Project created successfully!");
-                router.push("/admin/dashboard");
-            }
+            const formData = new FormData();
+            const techArray = project.tech
+                .split(",")
+                .map((item) => item.trim())
+                .filter((item) => item !== "");
+                
+            formData.append("title", project.title);
+            formData.append("description", project.description);
+            formData.append("category", project.category);
+            formData.append("tech", JSON.stringify(techArray)); // Send as JSON array
+            formData.append("github", project.github || "");
+            formData.append("link", project.link || "");
+            files.forEach((file) => formData.append("images", file));
+
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/project/add`, formData, {
+                withCredentials: true,
+                headers: { "Content-Type": "multipart/form-data" },
+            });
+
+            toast("Project created successfully!");
+            router.push("/admin/dashboard/projects");
         } catch (error) {
             console.error(error);
             toast("Failed to create project");
@@ -65,21 +108,7 @@ export default function AddProjectPage() {
         }
     };
 
-    const [loadin, setLoadin] = useState(true);
-    useEffect(() => {
-        setLoadin(true);
-        axios
-            .get(`${process.env.NEXT_PUBLIC_API_URL}/admin/dashboard`, {
-                withCredentials: true,
-            })
-            .catch(() => {
-                router.push("/admin/login");
-            })
-            .finally(() => {
-                setLoadin(false);
-            });
-    }, []);
-
+    // -------------------- Loading --------------------
     if (loadin) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#0f0f14] text-white">
@@ -88,84 +117,35 @@ export default function AddProjectPage() {
         );
     }
 
-
-
-
-
+    // -------------------- JSX --------------------
     return (
         <div className="min-h-screen bg-[#0f0f14] text-gray-100 pt-24 px-4">
             <div className="max-w-6xl mx-auto">
-
-                {/* Back Button */}
                 <button
                     onClick={() => router.back()}
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition mb-6"
                 >
-                    <ArrowLeft size={18} />
-                    Back
+                    <ArrowLeft size={18} /> Back
                 </button>
 
-                {/* Card */}
                 <div className="bg-[#16161d] border border-white/10 rounded-3xl shadow-xl p-5 sm:p-8 md:p-10">
+                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8">Add New Project</h1>
 
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-8">
-                        Add New Project
-                    </h1>
-
-                    {/* Responsive Form Grid */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                        {/* Category */}
                         {/* Category */}
                         <div className="md:col-span-2 flex flex-col gap-2">
-                            <label className="text-sm text-gray-400 md:hidden">
-                                Category
-                            </label>
-
-                            <div className="relative">
-                                <select
-                                    name="category"
-                                    value={project.category}
-                                    onChange={handleChange}
-                                    className="
-        w-full
-        appearance-none
-        bg-[#181820]
-        border border-white/10
-        text-white
-        px-4 py-3
-        rounded-2xl
-        text-base
-        focus:outline-none
-        focus:ring-2
-        focus:ring-purple-500/40
-        focus:border-purple-500
-        transition-all
-      "
-                                >
-                                    <option value="" className="text-gray-400">
-                                        Select Category
-                                    </option>
-                                    {categories.map((cat, index) => (
-                                        <option key={index} value={cat}>
-                                            {cat}
-                                        </option>
-                                    ))}
-                                </select>
-
-                                {/* Custom Arrow */}
-                                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
-                                    <svg
-                                        className="w-4 h-4"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
-                            </div>
+                            <label className="text-sm text-gray-400 md:hidden">Category</label>
+                            <select
+                                name="category"
+                                value={project.category}
+                                onChange={handleChange}
+                                className="w-full bg-[#181820] border border-white/10 text-white px-4 py-3 rounded-2xl"
+                            >
+                                <option value="" className="text-gray-400">Select Category</option>
+                                {categories.map((cat, index) => (
+                                    <option key={index} value={cat}>{cat}</option>
+                                ))}
+                            </select>
                         </div>
 
                         {/* Title */}
@@ -186,7 +166,7 @@ export default function AddProjectPage() {
                             className="w-full p-4 rounded-xl bg-[#121218] border border-white/20 focus:outline-none"
                         />
 
-                        {/* Description full width */}
+                        {/* Description */}
                         <div className="md:col-span-2">
                             <textarea
                                 name="description"
@@ -216,7 +196,53 @@ export default function AddProjectPage() {
                             className="w-full p-4 rounded-xl bg-[#121218] border border-white/20 focus:outline-none"
                         />
 
-                        {/* Button Full Width */}
+                        {/* Drag & Drop Upload */}
+                        <div
+                            className="md:col-span-2 border-2 border-dashed border-white/20 rounded-2xl p-12 flex flex-col items-center justify-center gap-4 text-gray-400 cursor-pointer hover:border-purple-500 transition"
+                            onDrop={handleDrop}
+                            onDragOver={handleDragOver}
+                            onClick={() => document.getElementById("fileInput")?.click()}
+                        >
+                            <p>Drag & Drop images here or click to select</p>
+                            <p className="text-sm text-gray-500">Only images are allowed</p>
+                            <Plus size={24} />
+                            <input
+                                type="file"
+                                id="fileInput"
+                                multiple
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+
+                        {/* Preview */}
+                        {filePreviews.length > 0 && (
+                            <div className="md:col-span-2 flex flex-wrap gap-2 mt-2">
+                                {filePreviews.map((item, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="w-28 h-28 bg-white/5 flex flex-col items-center justify-center rounded-lg text-xs text-gray-400 relative overflow-hidden"
+                                    >
+                                        <img
+                                            src={item.previewUrl}
+                                            alt={item.file.name}
+                                            className="object-cover w-full h-full"
+                                        />
+
+                                        <button
+                                            type="button"
+                                            onClick={() => setFiles(prev => prev.filter((_, i) => i !== idx))}
+                                            className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full bg-red-500 text-white text-xs shadow-lg hover:bg-red-600"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Submit Button */}
                         <div className="md:col-span-2">
                             <button
                                 onClick={handleSubmit}
@@ -226,7 +252,6 @@ export default function AddProjectPage() {
                                 {loading ? "Creating..." : "Create Project"}
                             </button>
                         </div>
-
                     </div>
                 </div>
             </div>
