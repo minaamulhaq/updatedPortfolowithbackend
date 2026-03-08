@@ -28,7 +28,7 @@ export const createProject = async (req, res) => {
             files.map((file) => uploadOnCloudinary(file.path))
         );
 
-        console.log("Uploaded images:", uploadedImages);
+
         const imageData = uploadedImages.map((file) => ({
             url: file.secure_url,
             public_id: file.public_id,

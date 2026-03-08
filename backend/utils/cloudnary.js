@@ -13,7 +13,7 @@ cloudinary.config({
 
 const uploadOnCloudinary = async (localFilePath) => {
     try {
-        console.log("Secret key :", process.env.CLOUDINARY_API_SECRET);
+
         if (!localFilePath) return null;
 
         // Upload file
@@ -22,7 +22,7 @@ const uploadOnCloudinary = async (localFilePath) => {
             folder: "portfolio", // optional but recommended
         });
 
-        console.log("✅ File uploaded on Cloudinary:", response.secure_url);
+
 
         // Delete local file after successful upload
         if (fs.existsSync(localFilePath)) {
@@ -44,7 +44,7 @@ const uploadOnCloudinary = async (localFilePath) => {
 const deleteFromCloudinary = async (publicId) => {
     try {
         const response = await cloudinary.uploader.destroy(publicId);
-        console.log("✅ File deleted from Cloudinary:", response);
+        // console.log("✅ File deleted from Cloudinary:", response);
         return response;
     } catch (error) {
         console.error("❌ Cloudinary deletion failed:", error);
