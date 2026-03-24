@@ -13,7 +13,7 @@ import contactRoutes from "./routes/contact.route.js";
 import { protect } from "./middleware/protect.js";
 app.use(cors(
     {
-        origin: "*",
+        origin: process.env.CLIENT_URL || "http://localhost:3000",
         methods: ["GET", "POST", "PUT", "DELETE"],
         credentials: true,
     }
