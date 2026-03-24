@@ -16,7 +16,7 @@ jobs:
     - name: Build Docker Images
       run: |
         docker build \
-          --build-arg NEXT_PUBLIC_API_URL=/api \
+          --build-arg NEXT_PUBLIC_API_URL=https://minaaulhaq.me/api \
           -t myapp-frontend ./client
 
         docker build -t myapp-backend ./backend
