@@ -25,6 +25,7 @@ import AboutMe from "@/component/AboutMe";
 import Workflow from "@/component/Workflow";
 import Project from "@/component/Project";
 import { SectionWrapper } from "@/component/SectionWrapper";
+import Skeleton from "@/component/Skeleton";
 
 /* -------------------- Types -------------------- */
 interface Images {
@@ -104,80 +105,102 @@ export default function Portfolio() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f14] text-gray-100 selection:bg-purple-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0f0f14] text-gray-100 selection:bg-purple-500/30 overflow-x-hidden scrollbar-hide">
 
       {/* HERO */}
       <SectionWrapper id="hero" className="flex md:py-28 flex-col-reverse md:grid md:grid-cols-2 gap-12 items-center min-h-[90vh] md:min-h-[80vh]">
-        <div className="space-y-8 text-center md:text-left">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-purple-400 font-semibold mb-4 tracking-[0.2em] uppercase text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Available for new projects
-            </h2>
-
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.15] tracking-tight">
-              Hi, I’m <br className="hidden md:block" />
-              <span className="bg-linear-to-r from-blue-400 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
-                Inaam ul Haq
-              </span>
-            </h1>
-
-            <p className="text-lg md:text-2xl text-gray-300 mt-6 font-medium">
-              Software Engineer | AI/ML Enthusiast
-            </p>
-            <p className="text-gray-500 max-w-lg mt-4 leading-relaxed mx-auto md:mx-0 text-sm md:text-base">
-              Crafting intelligent, high-performance web applications with a focus on AI integration and scalable architecture.
-            </p>
-          </motion.div>
-
-          <div className="space-y-6">
-            {/* Main Buttons */}
-            <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 w-full">
-              {/* View Projects Button */}
-              <Link href="/project" className="w-full sm:w-auto">
-                <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-purple-500 hover:text-white transition-all duration-300">
-                  View Projects
-                  <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-
-              {/* Contact Me Button */}
-              <Link href="/contact" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto px-8 py-4 border border-white/10 rounded-full font-bold hover:bg-white/5 transition-all duration-300">
-                  Contact Me
-                </button>
-              </Link>
+        <div className="space-y-8 text-center md:text-left w-full">
+          {loadingSkills ? (
+            <div className="space-y-6">
+              <Skeleton className="h-4 w-48 mx-auto md:mx-0" />
+              <div className="space-y-3">
+                <Skeleton className="h-12 w-3/4 mx-auto md:mx-0" />
+                <Skeleton className="h-12 w-1/2 mx-auto md:mx-0" />
+              </div>
+              <Skeleton className="h-6 w-2/3 mx-auto md:mx-0" />
+              <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Skeleton className="h-12 w-40 rounded-full" />
+                <Skeleton className="h-12 w-40 rounded-full" />
+              </div>
+              <div className="flex gap-3 justify-center md:justify-start">
+                <Skeleton className="h-10 w-10 rounded-xl" />
+                <Skeleton className="h-10 w-10 rounded-xl" />
+                <Skeleton className="h-10 w-10 rounded-xl" />
+              </div>
             </div>
+          ) : (
+            <>
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h2 className="text-purple-400 font-semibold mb-4 tracking-[0.2em] uppercase text-xs md:text-sm flex items-center justify-center md:justify-start gap-2">
+                  <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                  Available for new projects
+                </h2>
 
-            {/* Socials & CV Row */}
-            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-              {[
-                { icon: <Linkedin size={20} />, href: "https://www.linkedin.com/in/m-inaam-ul-haq/", label: "LinkedIn" },
-                { icon: <Github size={20} />, href: "https://github.com/minaamulhaq", label: "GitHub" },
-                { icon: <Mail size={20} />, href: "mailto:minaamulhaq00@gmail.com", label: "Email" },
-              ].map((social, i) => (
-                <a
-                  key={i}
-                  href={social.href}
-                  className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-purple-500/20 hover:border-purple-500/50 transition-all text-gray-400 hover:text-white"
-                  aria-label={social.label}
-                >
-                  {social.icon}
-                </a>
-              ))}
+                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.15] tracking-tight">
+                  Hi, I’m <br className="hidden md:block" />
+                  <span className="bg-linear-to-r from-blue-400 via-purple-500 to-indigo-500 bg-clip-text text-transparent">
+                    Inaam ul Haq
+                  </span>
+                </h1>
 
-              <div className="h-8 w-1px bg-white/10 mx-2 hidden sm:block"></div>
+                <p className="text-lg md:text-2xl text-gray-300 mt-6 font-medium">
+                  Software Engineer | AI/ML Enthusiast
+                </p>
+                <p className="text-gray-500 max-w-lg mt-4 leading-relaxed mx-auto md:mx-0 text-sm md:text-base">
+                  Crafting intelligent, high-performance web applications with a focus on AI integration and scalable architecture.
+                </p>
+              </motion.div>
 
-              <button onClick={handleDownload} className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500 hover:text-white transition-all text-purple-400 text-sm font-bold">
-                <Send size={18} />
-                Hire Upwork
-              </button>
-            </div>
-          </div>
+              <div className="space-y-6">
+                {/* Main Buttons */}
+                <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4 w-full">
+                  {/* View Projects Button */}
+                  <Link href="/project" className="w-full sm:w-auto">
+                    <button className="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-purple-500 hover:text-white transition-all duration-300">
+                      View Projects
+                      <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </Link>
+
+                  {/* Contact Me Button */}
+                  <Link href="/contact" className="w-full sm:w-auto">
+                    <button className="w-full sm:w-auto px-8 py-4 border border-white/10 rounded-full font-bold hover:bg-white/5 transition-all duration-300">
+                      Contact Me
+                    </button>
+                  </Link>
+                </div>
+
+                {/* Socials & CV Row */}
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                  {[
+                    { icon: <Linkedin size={20} />, href: "https://www.linkedin.com/in/m-inaam-ul-haq/", label: "LinkedIn" },
+                    { icon: <Github size={20} />, href: "https://github.com/minaamulhaq", label: "GitHub" },
+                    { icon: <Mail size={20} />, href: "mailto:minaamulhaq00@gmail.com", label: "Email" },
+                  ].map((social, i) => (
+                    <a
+                      key={i}
+                      href={social.href}
+                      className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-purple-500/20 hover:border-purple-500/50 transition-all text-gray-400 hover:text-white"
+                      aria-label={social.label}
+                    >
+                      {social.icon}
+                    </a>
+                  ))}
+
+                  <div className="h-8 w-1px bg-white/10 mx-2 hidden sm:block"></div>
+
+                  <button onClick={handleDownload} className="cursor-pointer flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 rounded-xl hover:bg-purple-500 hover:text-white transition-all text-purple-400 text-sm font-bold">
+                    <Send size={18} />
+                    Hire Upwork
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <motion.div
@@ -186,21 +209,25 @@ export default function Portfolio() {
           transition={{ duration: 0.8 }}
           className="relative flex justify-center w-full"
         >
-          <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96">
-            <div className="absolute inset-0 bg-linear-to-tr from-blue-600 to-purple-600 rounded-full blur-[60px] opacity-20"></div>
+          {loadingSkills ? (
+            <Skeleton className="w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96 rounded-full" />
+          ) : (
+            <div className="relative w-56 h-56 sm:w-72 sm:h-72 md:w-96 md:h-96">
+              <div className="absolute inset-0 bg-linear-to-tr from-blue-600 to-purple-600 rounded-full blur-[60px] opacity-20"></div>
 
-            <div className="relative w-full h-full rounded-full border border-white/10 p-3 md:p-4">
-              <div className="w-full h-full rounded-full overflow-hidden relative border-4 border-[#16161d] shadow-2xl">
-                <Image
-                  src="/inaam.jpg"
-                  alt="Muhammad Inaam ul Haq"
-                  fill
-                  priority
-                  className="object-cover"
-                />
+              <div className="relative w-full h-full rounded-full border border-white/10 p-3 md:p-4">
+                <div className="w-full h-full rounded-full overflow-hidden relative border-4 border-[#16161d] shadow-2xl">
+                  <Image
+                    src="/inaam.jpg"
+                    alt="Muhammad Inaam ul Haq"
+                    fill
+                    priority
+                    className="object-cover"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </motion.div>
       </SectionWrapper>
 
@@ -307,9 +334,23 @@ export default function Portfolio() {
           {/* Skills Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {loadingSkills ? (
-              <div className="col-span-full py-20 flex flex-col items-center justify-center">
-                <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-gray-500 font-mono text-[10px] tracking-widest uppercase text-center">INITIALIZING SYSTEM...</p>
+              <div className="col-span-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {[1, 2, 3, 4, 5, 6].map((i) => (
+                  <div key={i} className="h-64 bg-[#0a0a0a] border border-white/5 p-8 rounded-2xl flex flex-col justify-between">
+                    <div className="flex items-center gap-4">
+                      <Skeleton variant="circle" className="w-12 h-12" />
+                      <Skeleton className="h-6 w-32" />
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-4">
+                      <Skeleton className="h-6 w-16" />
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-6 w-14" />
+                    </div>
+                    <div className="mt-8">
+                      <Skeleton className="h-1 w-full" />
+                    </div>
+                  </div>
+                ))}
               </div>
             ) : skills.length === 0 ? (
               <p className="col-span-full text-center text-gray-500 font-mono text-xs uppercase tracking-widest italic">No data in database.</p>

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { SectionWrapper } from "./SectionWrapper";
 import { GlassCard } from "./GlassCard";
 import { ExternalLink, Github, ChevronLeft, ChevronRight, MoveRight } from "lucide-react";
+import Skeleton from "./Skeleton";
 
 /* -------------------- Types -------------------- */
 interface Images {
@@ -94,7 +95,19 @@ export default function Project() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {loading ? (
-                        [1, 2, 3].map(i => <div key={i} className="h-[280px] rounded-[2.5rem] bg-white/5 animate-pulse" />)
+                        [1, 2, 3].map(i => (
+                            <div key={i} className="h-[280px] rounded-[2.5rem] bg-[#0c0c11]/80 border border-white/10 p-0 overflow-hidden flex flex-col">
+                                <Skeleton className="h-[70%] w-full rounded-none" />
+                                <div className="p-4 px-5 flex-1 flex flex-col justify-center gap-2">
+                                    <Skeleton className="h-3 w-12" />
+                                    <Skeleton className="h-6 w-3/4" />
+                                    <div className="flex gap-2">
+                                        <Skeleton className="h-3 w-10" />
+                                        <Skeleton className="h-3 w-10" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))
                     ) : (
                         projects.map((proj) => (
                             <div key={proj._id} className="group relative">
