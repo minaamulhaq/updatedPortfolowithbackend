@@ -21,11 +21,29 @@ interface Project {
     createdAt: string;
 }
 
+/* -------------------- Helper -------------------- */
+const getApiUrl = (id: string) => {
+    // On the server, we need an absolute URL.
+    // NEXT_PUBLIC_API_URL could be relative (like "/api") in production (Docker).
+    // BACKEND_URL should be the absolute internal/external URL.
+    const baseUrl = process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api` : process.env.NEXT_PUBLIC_API_URL;
+    
+    // Fallback logic for local vs server
+    if (baseUrl?.startsWith("http")) {
+        return `${baseUrl}/project/${id}`;
+    }
+    
+    // If it's still relative, it will fail on server. We need to handle this.
+    // Usually in Docker, BACKEND_URL is set to http://backend:5000
+    return `http://backend:5000/api/project/${id}`;
+};
+
 /* -------------------- SEO Metadata -------------------- */
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
     try {
-        const res = await fetch(`${process.env.API_URL}/api/project/${id}`, {
+        const url = getApiUrl(id);
+        const res = await fetch(url, {
             next: { revalidate: 3600 } // Cache for 1 hour
         });
         const data = await res.json();
@@ -65,7 +83,8 @@ export default async function ProjectDetails({ params }: { params: Promise<{ id:
 
     let project: Project | null = null;
     try {
-        const res = await fetch(`${process.env.API_URL}/api/project/${id}`, {
+        const url = getApiUrl(id);
+        const res = await fetch(url, {
             next: { revalidate: 3600 }
         });
         const data = await res.json();
