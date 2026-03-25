@@ -25,7 +25,7 @@ interface Project {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
     const { id } = await params;
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/${id}`, {
+        const res = await fetch(`${process.env.API_URL}/api/project/${id}`, {
             next: { revalidate: 3600 } // Cache for 1 hour
         });
         const data = await res.json();
@@ -65,7 +65,7 @@ export default async function ProjectDetails({ params }: { params: Promise<{ id:
 
     let project: Project | null = null;
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/project/${id}`, {
+        const res = await fetch(`${process.env.API_URL}/api/project/${id}`, {
             next: { revalidate: 3600 }
         });
         const data = await res.json();
@@ -79,4 +79,4 @@ export default async function ProjectDetails({ params }: { params: Promise<{ id:
     }
 
     return <ProjectClient project={project} />;
-}
+}
