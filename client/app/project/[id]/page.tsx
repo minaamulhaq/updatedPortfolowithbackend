@@ -27,12 +27,12 @@ const getApiUrl = (id: string) => {
     // NEXT_PUBLIC_API_URL could be relative (like "/api") in production (Docker).
     // BACKEND_URL should be the absolute internal/external URL.
     const baseUrl = process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api` : process.env.NEXT_PUBLIC_API_URL;
-    
+
     // Fallback logic for local vs server
     if (baseUrl?.startsWith("http")) {
         return `${baseUrl}/project/${id}`;
     }
-    
+
     // If it's still relative, it will fail on server. We need to handle this.
     // Usually in Docker, BACKEND_URL is set to http://backend:5000
     return `http://backend:5000/api/project/${id}`;
@@ -68,7 +68,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
                 title: project.title,
                 description: project.description.substring(0, 160),
                 images: [project.images[0]?.url],
-            }
+            },
         };
     } catch (error) {
         return {

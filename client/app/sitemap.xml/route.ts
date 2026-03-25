@@ -11,9 +11,10 @@ export async function GET() {
         // ✅ Static pages
         sitemap.write({ url: "/", changefreq: "daily", priority: 1.0 });
         sitemap.write({ url: "/contact", changefreq: "monthly", priority: 0.7 });
-
+        sitemap.write({ url: "/project", changefreq: "monthly", priority: 0.7 });
         // ✅ Dynamic projects
-        const res = await fetch(`${baseUrl}/api/projects`);
+        const internalApiUrl = process.env.BACKEND_URL || "http://backend:5000";
+        const res = await fetch(`${internalApiUrl}/api/project/all`);
         if (res.ok) {
             const projects = await res.json();
             if (projects.data && Array.isArray(projects.data)) {
