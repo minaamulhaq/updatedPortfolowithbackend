@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   backend:
+    image: portfolio-backend:latest
     build: ./backend
     ports:
       - "5000:5000"
@@ -9,6 +10,7 @@ services:
       - ./backend/.env
 
   frontend:
+    image: portfolio-frontend:latest
     build:
       context: ./client
       args:

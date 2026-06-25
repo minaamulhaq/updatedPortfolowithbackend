@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/component/Header";
 import Footer from "@/component/Footer";
 import { Toaster } from "sonner";
+import Script from "next/script";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,7 +58,7 @@ export const metadata: Metadata = {
     siteName: "Inaam Portfolio",
     images: [
       {
-        url: "/og-image.png",
+        url: "/inaam.png",
         width: 1200,
         height: 630,
         alt: "Inaam Ul Haq Portfolio",
@@ -100,6 +101,11 @@ export default function RootLayout({
         <Toaster />
         {children}
         <Footer />
+        <Script
+          src="https://chatxify.com/widget.js"
+          data-agent-id="1bbe6d7e-664d-4edd-bb1b-488a633db528"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
